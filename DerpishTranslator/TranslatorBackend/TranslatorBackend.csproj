@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="framework\objects\Case.cs" />
     <Compile Include="framework\translation\DerpishToEnglish.cs" />
     <Compile Include="framework\translation\EnglishToDerpish.cs" />
     <Compile Include="framework\mongoControl\MongoControl.cs" />

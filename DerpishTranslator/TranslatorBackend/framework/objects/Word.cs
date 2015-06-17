@@ -10,20 +10,23 @@ namespace TranslatorBackend.framework.objects
     {
         public String DerpishWord { get; protected set; }
         public String EnglishWord { get; protected set; }
+        public Case wordCase { get; private set; }
         public String Id { get; private set; }
 
         public Word()
         {
             DerpishWord = "";
             EnglishWord = "";
+            wordCase = Case.Noun;
             Id = generateHexValue();
         }
 
-        public Word(String _derpWord, String _englishWord)
+        public Word(String _derpWord, String _englishWord, Case _wordCase)
         {
             DerpishWord = _derpWord;
             EnglishWord = _englishWord;
             Id = generateHexValue();
+            wordCase = _wordCase;
         }
 
 

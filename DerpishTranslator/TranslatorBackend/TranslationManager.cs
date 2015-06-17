@@ -19,7 +19,7 @@ namespace TranslatorBackend
         EnglishToDerpish e2d;
         DerpishToEnglish d2e;
 
-        List<Word> words;
+        public  Dictionary<string, List<Word>> words;
 
         IMongoDatabase mongoDB;
         
@@ -39,11 +39,19 @@ namespace TranslatorBackend
         public void resetWordList()
         {
             words.Clear();
-            string[] letters = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z" };
+            words = new Dictionary<string,List<Word>>();
+            string[] letters = { "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "PHRASES" };
             foreach (string s in letters)
             {
+                words.Add(s, new List<Word>());
                 var thigny = mongoDB.GetCollection<BsonDocument>(s);
-                List<BsonDocument> l = new List<BsonDocument>();
+                List<BsonDocument> docs = new List<BsonDocument>();
+                thigny.Find(new BsonDocument()).ForEachAsync(d => docs.Add(d));
+                foreach(BsonDocument d in docs){
+                    Word w = new JavaScriptSerializer().Deserialize<Word>(d.ToJson());
+                    words[s].Add(w);
+                }
+
             }
         }
 
@@ -51,6 +59,14 @@ namespace TranslatorBackend
         {
             string x = word.EnglishWord.Substring(0,1);
             var wordCollection = mongoDB.GetCollection<BsonDocument>(x.ToUpper());
+            string jsonString = new JavaScriptSerializer().Serialize(word);
+            BsonDocument doc = BsonDocument.Parse(jsonString);
+            wordCollection.InsertOneAsync(doc);
+        }
+
+        public void addPhrase(Word word)
+        {
+            var wordCollection = mongoDB.GetCollection<BsonDocument>("PHRASES");
             string jsonString = new JavaScriptSerializer().Serialize(word);
             BsonDocument doc = BsonDocument.Parse(jsonString);
             wordCollection.InsertOneAsync(doc);
